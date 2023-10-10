@@ -1,36 +1,41 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loader from "../components/Loader";
 import FormField from "../components/FormField";
+import {
+  signInStart,
+  signInSuccess,
+  signInFail,
+} from "../redux/user/userSlice";
+import { useSelector, useDispatch } from "react-redux";
 
 const SignIn = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { loading, error } = useSelector((state) => state.user);
   const [userData, setUserData] = useState({
     email: "",
     password: "",
   });
 
+  const Navigate = useNavigate();
+  const Dispatch = useDispatch();
+
   const handleInputChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
   const handleSubmit = async (e) => {
-    setLoading(true);
+    Dispatch(signInStart());
     e.preventDefault();
-    var response;
     try {
-      response = await axios.post("/api/auth/signin/", userData);
+      const response = await axios.post("/api/auth/signin/", userData);
       if (response?.data.success == false) {
-        setError(response?.data?.message);
-        setLoading(false);
-      }else{
-        setError("")
-        setLoading(false);
+        Dispatch(signInFail(response?.data?.message));
+      } else {
+        Dispatch(signInSuccess(response.data));
+        Navigate("/");
       }
     } catch (e) {
-      setLoading(false);
-      setError(e.response.data.message);
+      Dispatch(signInFail(e?.response?.data?.message));
     }
   };
   return (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import axios from "axios";
 import FormField from "../components/FormField";
 import Loader from "../components/Loader";
@@ -12,6 +12,7 @@ const SignUp = () => {
     email: "",
     password: "",
   });
+  const Navigate=useNavigate();
 
   const handleInputChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -26,6 +27,7 @@ const SignUp = () => {
         setError(response?.data?.message);
         setLoading(false);
       }else{
+        Navigate("/sign-in")
         setLoading(false);
         setError("");
       }
