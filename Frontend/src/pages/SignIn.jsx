@@ -9,6 +9,7 @@ import {
   signInFail,
 } from "../redux/user/userSlice";
 import { useSelector, useDispatch } from "react-redux";
+import Oauth from "../components/Oauth";
 
 const SignIn = () => {
   const { loading, error } = useSelector((state) => state.user);
@@ -69,6 +70,7 @@ const SignIn = () => {
           >
             Sign In
           </button>
+          <Oauth />
           <div className="flex">
             <p>Don't have an account?</p>
             <Link to="/sign-up">

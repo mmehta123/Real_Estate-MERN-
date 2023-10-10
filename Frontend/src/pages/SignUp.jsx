@@ -3,6 +3,7 @@ import { Link,useNavigate } from "react-router-dom";
 import axios from "axios";
 import FormField from "../components/FormField";
 import Loader from "../components/Loader";
+import Oauth from "../components/Oauth";
 
 const SignUp = () => {
   const [loading, setLoading] = useState(false);
@@ -74,6 +75,7 @@ const SignUp = () => {
           >
             Sign Up
           </button>
+          <Oauth/>
           <div className="flex">
             <p>Already have an account?</p>
             <Link to="/sign-in">
