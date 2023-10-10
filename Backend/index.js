@@ -22,7 +22,7 @@ app.use("/api/auth", authRoute);
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "internal server error";
-  return res.status(statusCode).json({ status: false, statusCode, message });
+  return res.status(statusCode).json({ success: false, statusCode, message });
 });
 
 const PORT = process.env.PORT || 8000;
