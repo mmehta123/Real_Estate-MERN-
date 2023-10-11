@@ -10,7 +10,7 @@ const signIn = async (req, res, next) => {
     if (!user) {
       return next(errorHandler(404, "User Not Found!"));
     }
-    const validPass = bcrypt.compareSync(password, user.password);
+    const validPass = await bcrypt.compareSync(password, user.password);
     if (!validPass) {
       return next(errorHandler(401, "Invalid Password"));
     }
