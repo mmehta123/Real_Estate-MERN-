@@ -37,12 +37,14 @@ const Header = () => {
               Sign In
             </li>
           </Link>
-          {currentUser && (
-            <img
-              src={currentUser.avatar}
-              className="rounded-full h-7 w-7 object-cover"
-            />
-          )}
+          <Link  to="/profile">
+            {currentUser && (
+              <img
+                src={currentUser.avatar}
+                className="rounded-full h-7 w-7 object-cover"
+              />
+            )}
+          </Link>
         </ul>
       </div>
     </header>

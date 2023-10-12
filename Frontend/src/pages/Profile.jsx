@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 import {
   getDownloadURL,
   getStorage,
@@ -13,8 +14,14 @@ import {
   updateStart,
   updateSuccess,
   updateFail,
+  deleteStart,
+  deleteSuccess,
+  deleteFail,
+  signOutStart,
+  signOutSuccess,
 } from "../redux/user/userSlice";
 import Loader from "../components/Loader";
+import SignIn from "./SignIn";
 
 const Profile = () => {
   const fileRef = useRef(null);
@@ -64,6 +71,28 @@ const Profile = () => {
   };
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  const handleDelete = async () => {
+    dispatch(deleteStart());
+    try {
+      const response = await axios.delete(
+        `/api/user/delete/${currentUser._id}`
+      );
+      dispatch(deleteSuccess());
+      <Navigate to={<SignIn />} />;
+    } catch (e) {
+      dispatch(deleteFail(e.response.data.message));
+    }
+  };
+  const handleSignOut = async () => {
+    dispatch(signOutStart());
+    try {
+      await axios.get("/api/auth/signout");
+      dispatch(signOutSuccess());
+      <Navigate to={<SignIn />} />;
+    } catch (error) {
+      dispatch(signOutFail(error.response.data.message));
+    }
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -150,12 +179,16 @@ const Profile = () => {
         )}
       </form>
       <div className="flex justify-between my-2">
-        <button className="text-red-600 cursor-pointer">Delete Account</button>
-        <button className="text-red-600 cursor-pointer">Sign Out</button>
+        <button className="text-red-600 cursor-pointer" onClick={handleDelete}>
+          Delete Account
+        </button>
+        <button className="text-red-600 cursor-pointer" onClick={handleSignOut}>
+          Sign Out
+        </button>
       </div>
       <p className="text-red-500 mt-2">{error ? error : " "}</p>
       <p className="text-green-500 mt-2">
-        {updateUserSuccess ? "User updated succesfully" : " "}
+        {updateUserSuccess && !error ? "User updated succesfully" : " "}
       </p>
     </div>
   );

@@ -31,4 +31,23 @@ const updateProfile = async (req, res, next) => {
     next(error);
   }
 };
-module.exports = updateProfile;
+const deleteUser = async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    return next(errorHandler(401, "Unauthorized"));
+  }
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (user) {
+      res.clearCookie("access_token");
+      return res
+        .status(200)
+        .json({ message: "User deleted succesfully" })
+        .clearCookie("access_token");
+    }
+    return next(errorHandler(404, "User Not Found"));
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { updateProfile, deleteUser };
