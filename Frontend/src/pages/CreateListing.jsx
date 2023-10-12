@@ -1,15 +1,85 @@
 import { useState } from "react";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { app } from "../firebase";
 import FormField from "../components/FormField";
+import Loader from "../components/Loader";
 
 const CreateListing = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    addresss: "",
+    address: "",
+    imageUrls: [],
   });
+  const [files, setFiles] = useState([]);
+  const [imageUploadError, setImageUploadError] = useState("");
+  const [uploading, setUploading] = useState(false);
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  console.log(formData);
+
+  const handleUploadImage = () => {
+    if (files.length > 0 && files.length + formData.imageUrls.length <= 6) {
+      setUploading(true);
+      const promises = [];
+      for (let i = 0; i < files.length; i++) {
+        promises.push(storeImage(files[i]));
+      }
+      Promise.all(promises)
+        .then((url) => {
+          setFormData({
+            ...formData,
+            imageUrls: formData.imageUrls.concat(url),
+          });
+          setUploading(false);
+          setImageUploadError("");
+        })
+        .catch((err) => {
+          setUploading(false);
+          setImageUploadError("Failed! file size upload limit exceeds");
+        });
+    } else {
+      setUploading(false);
+      setImageUploadError("You can only add total upto 6 images");
+    }
+  };
+  const storeImage = (file) => {
+    return new Promise((resolve, reject) => {
+      const storage = getStorage(app);
+      const fileName = new Date().getTime() + file.name;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          let progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Processing Images`, progress, "%");
+        },
+        (error) => {
+          reject(error);
+        },
+        () => {
+          const uploadURL = getDownloadURL(uploadTask.snapshot.ref).then(
+            (downloadURL) => resolve(downloadURL)
+          );
+        }
+      );
+    });
+  };
+  const handleDelete = (index) => {
+    setFormData({
+      ...formData,
+      imageUrls: formData.imageUrls.filter((_, i) => i !== index),
+    });
+  };
+
   return (
     <main className=" max-w-5xl mx-auto ">
       <h1 className="font-bold text-4xl text-center p-4">Create Listing</h1>
@@ -33,7 +103,7 @@ const CreateListing = () => {
             onChange={handleInputChange}
           />
           <FormField
-            value={formData.addresss}
+            value={formData.address}
             type="text"
             name="address"
             placeholder="Address"
@@ -127,21 +197,51 @@ const CreateListing = () => {
               The first Image will be cover (max-6)
             </span>
           </div>
-          <div className="flex flex-col sm:flex-row ">
-            <input
-              type="file"
-              className="border w-full sm:w-2/3 p-3 border-gray-500 mt-2 rounded tex-sm  "
-              name="image"
-              accept="image/*"
-              multiple
-            />
-            <button
-              type="button"
-              className=" text-white mt-3 sm:ml-2 ml-0 bg-[#6469ff] w-full sm:w-1/3 font-medium rounded-md text-sm   px-5 py-2.5 text-center disabled:bg-slate-500"
-            >
-              Upload
-            </button>
-          </div>
+          {uploading ? (
+            <div className="flex items-center justify-center my-2">
+              <Loader />
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row ">
+              <input
+                type="file"
+                onChange={(e) => setFiles(e.target.files)}
+                className="border w-full sm:w-2/3 p-3 border-gray-500 mt-2 rounded tex-sm  "
+                name="image"
+                accept="image/*"
+                multiple
+              />
+              <button
+                type="button"
+                onClick={handleUploadImage}
+                className=" text-white mt-3 sm:ml-2 ml-0 bg-[#6469ff] w-full sm:w-1/3 font-medium rounded-md text-sm   px-5 py-2.5 text-center disabled:bg-slate-500"
+              >
+                Upload
+              </button>
+            </div>
+          )}
+          {formData.imageUrls.length > 0 &&
+            formData.imageUrls.map((item, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center p-2"
+              >
+                <img
+                  src={item}
+                  className="object-contain rounded-lg h-28 w-28 "
+                />
+                <button
+                  type="button"
+                  className="text-red-600"
+                  onClick={() => handleDelete(index)}
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          <p className="text-rose-700 text-sm ">
+            {imageUploadError && imageUploadError}
+          </p>
           <button
             type="button"
             className=" text-white bg-[#ea3b49] font-medium rounded-md text-sm w-full mt-2 px-5 py-2.5 text-center disabled:bg-slate-500"
