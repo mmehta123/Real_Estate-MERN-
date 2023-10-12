@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
   getDownloadURL,
   getStorage,
@@ -22,10 +22,12 @@ import {
 } from "../redux/user/userSlice";
 import Loader from "../components/Loader";
 import SignIn from "./SignIn";
+import CreateListing from "./CreateListing";
 
 const Profile = () => {
   const fileRef = useRef(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { currentUser, loading, error } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
   const [filePercentage, setFilePercentage] = useState(0);
@@ -94,6 +96,11 @@ const Profile = () => {
       dispatch(signOutFail(error.response.data.message));
     }
   };
+  const handleCreateListing = () => {
+    // <Navigate to={<CreateListing/>} /> //Not working??
+    navigate("/create-listing");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(updateStart());
@@ -177,6 +184,13 @@ const Profile = () => {
             Update Profile
           </button>
         )}
+        <button
+          type="button"
+          onClick={handleCreateListing}
+          className=" text-white bg-[#3b8f27] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center disabled:bg-slate-500"
+        >
+          Create Listing
+        </button>
       </form>
       <div className="flex justify-between my-2">
         <button className="text-red-600 cursor-pointer" onClick={handleDelete}>
