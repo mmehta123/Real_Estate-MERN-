@@ -8,6 +8,7 @@ const dotenv = require("dotenv");
 const { connectDB } = require("./config/configDb");
 const authRoute = require("./routes/auth.route");
 const userRoute = require("./routes/user.route");
+const listingRoute = require("./routes/listing,route");
 const cookieParser = require("cookie-parser");
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
+app.use("/api/listing", listingRoute);
 
 // middleware for handling error
 app.use((err, req, res, next) => {
