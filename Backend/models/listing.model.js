@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const listingSchema = new mongoose.Schema(
   {
@@ -18,7 +18,7 @@ const listingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    discountPrice: {
+    discountedPrice: {
       type: Number,
       required: true,
     },
@@ -55,9 +55,9 @@ const listingSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true,versionKey:false }
+  { timestamps: true, versionKey: false }
 );
 
 const Listing = mongoose.model("Listing", listingSchema);
 
-export default Listing;
+module.exports = Listing;
