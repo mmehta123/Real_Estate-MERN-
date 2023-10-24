@@ -1,10 +1,28 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const Header = () => {
   const { currentUser } = useSelector((state) => state.user);
+  const [searchString, setSearchString] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get("search");
+    if (searchTermFromUrl) {
+      setSearchString(searchTermFromUrl);
+    }
+  }, [location.search]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("search", searchString);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  };
   return (
     <header className="bg-slate-200 shadow-md ">
       <div className="flex justify-between max-w-6xl items-center m-auto p-3">
@@ -14,12 +32,19 @@ const Header = () => {
             <span className="text-red-500">Estate</span>
           </h1>
         </Link>
-        <form className="bg-slate-100 rounded-lg w-24 sm:w-64 flex  justify-between px-2 items-center">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-slate-100 rounded-lg w-24 sm:w-64 flex  justify-between px-2 items-center"
+        >
           <input
+            onChange={(e) => setSearchString(e.target.value)}
             placeholder="Search..."
+            value={searchString}
             className="bg-transparent p-2 focus:outline-none "
           />
-          <FaSearch />
+          <button>
+            <FaSearch />
+          </button>
         </form>
         <ul className="flex gap-4 ">
           <Link to="/">
@@ -37,7 +62,7 @@ const Header = () => {
               Sign In
             </li>
           </Link>
-          <Link  to="/profile">
+          <Link to="/profile">
             {currentUser && (
               <img
                 src={currentUser.avatar}
