@@ -141,7 +141,7 @@ const SingleListing = () => {
                 {listing.furnished ? "Furnished" : "Unfurnished"}
               </li>
             </ul>
-            {currentUser._id === listing.userRef && !contact && (
+            {currentUser && currentUser._id !== listing.userRef && !contact && (
               <button
                 type="button"
                 className=" text-white mt-5 bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"

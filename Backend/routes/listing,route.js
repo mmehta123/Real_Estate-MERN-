@@ -15,6 +15,6 @@ router.get("/getlisting/:id", getListing);
 router.get("/getsearchlisting", getSearchedListings);
 router.delete("/deletelisting/:id", verifyToken, deleteListing);
 router.post("/updatelisting/:id", verifyToken, updateListing);
-router.get("/getsinglelisting/:id", verifyToken, getSingleListing);
+router.get("/getsinglelisting/:id",  getSingleListing);
 
 module.exports = router;
