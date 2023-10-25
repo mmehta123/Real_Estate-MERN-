@@ -57,11 +57,13 @@ const Header = () => {
               About
             </li>
           </Link>
-          <Link to="/sign-in">
-            <li className="sm:inline hidden hover:underline text-gray-700 cursor-pointer">
-              Sign In
-            </li>
-          </Link>
+          {!currentUser && (
+            <Link to="/sign-in">
+              <li className="sm:inline hidden hover:underline text-gray-700 cursor-pointer">
+                Sign In
+              </li>
+            </Link>
+          )}
           <Link to="/profile">
             {currentUser && (
               <img
